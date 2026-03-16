@@ -1,0 +1,142 @@
+<div class="modal-overlay" (click)="cancelar()">
+  <div class="modal-dialog form-dialog" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="form-header">
+      <div class="form-header-content">
+        <span class="form-header-icon">{{ isEditMode ? '✏️' : '➕' }}</span>
+        <div>
+          <h2>{{ isEditMode ? 'Editar Estudiante' : 'Nuevo Estudiante' }}</h2>
+          <p class="form-header-subtitle">
+            {{ isEditMode ? 'Modifica los datos del estudiante' : 'Completa el formulario para registrar' }}
+          </p>
+        </div>
+      </div>
+      <button class="form-close-btn" (click)="cancelar()" title="Cerrar">×</button>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="formulario" (ngSubmit)="submitForm()" class="form-body" novalidate>
+      <!-- Nombre -->
+      <div class="form-group" [ngClass]="{'has-error': f['nombre'].invalid && f['nombre'].touched}">
+        <label class="form-label" for="nombre">
+          <span class="label-icon">👤</span> Nombre Completo
+        </label>
+        <input
+          id="nombre"
+          type="text"
+          class="form-control"
+          formControlName="nombre"
+          placeholder="Ej: María García López"
+        />
+        <div class="error-messages" *ngIf="f['nombre'].invalid && f['nombre'].touched">
+          <span *ngIf="f['nombre'].errors?.['required']">El nombre es requerido</span>
+          <span *ngIf="f['nombre'].errors?.['minlength']">El nombre debe tener al menos 3 caracteres</span>
+        </div>
+      </div>
+
+      <!-- Row: Carné + Email -->
+      <div class="form-row">
+        <div class="form-group" [ngClass]="{'has-error': f['carnet'].invalid && f['carnet'].touched}">
+          <label class="form-label" for="carnet">
+            <span class="label-icon">🆔</span> Carné
+          </label>
+          <input
+            id="carnet"
+            type="text"
+            class="form-control"
+            formControlName="carnet"
+            placeholder="Ej: 2024-001"
+          />
+          <div class="error-messages" *ngIf="f['carnet'].invalid && f['carnet'].touched">
+            <span *ngIf="f['carnet'].errors?.['required']">El carné es requerido</span>
+          </div>
+        </div>
+
+        <div class="form-group" [ngClass]="{'has-error': f['email'].invalid && f['email'].touched}">
+          <label class="form-label" for="email">
+            <span class="label-icon">📧</span> Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            class="form-control"
+            formControlName="email"
+            placeholder="Ej: estudiante@correo.edu.gt"
+          />
+          <div class="error-messages" *ngIf="f['email'].invalid && f['email'].touched">
+            <span *ngIf="f['email'].errors?.['required']">El email es requerido</span>
+            <span *ngIf="f['email'].errors?.['email']">Formato de email inválido</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carrera -->
+      <div class="form-group" [ngClass]="{'has-error': f['carrera'].invalid && f['carrera'].touched}">
+        <label class="form-label" for="carrera">
+          <span class="label-icon">📚</span> Carrera
+        </label>
+        <select
+          id="carrera"
+          class="form-control form-select"
+          formControlName="carrera"
+        >
+          <option value="" disabled>Selecciona una carrera</option>
+          <option *ngFor="let c of carreras" [value]="c">{{ c }}</option>
+        </select>
+        <div class="error-messages" *ngIf="f['carrera'].invalid && f['carrera'].touched">
+          <span *ngIf="f['carrera'].errors?.['required']">La carrera es requerida</span>
+        </div>
+      </div>
+
+      <!-- Row: Semestre + Estado -->
+      <div class="form-row">
+        <div class="form-group" [ngClass]="{'has-error': f['semestre'].invalid && f['semestre'].touched}">
+          <label class="form-label" for="semestre">
+            <span class="label-icon">📅</span> Semestre
+          </label>
+          <input
+            id="semestre"
+            type="number"
+            class="form-control"
+            formControlName="semestre"
+            min="1"
+            max="12"
+            placeholder="1-12"
+          />
+          <div class="error-messages" *ngIf="f['semestre'].invalid && f['semestre'].touched">
+            <span *ngIf="f['semestre'].errors?.['required']">El semestre es requerido</span>
+            <span *ngIf="f['semestre'].errors?.['min']">Mínimo semestre 1</span>
+            <span *ngIf="f['semestre'].errors?.['max']">Máximo semestre 12</span>
+          </div>
+        </div>
+
+        <div class="form-group" [ngClass]="{'has-error': f['estado'].invalid && f['estado'].touched}">
+          <label class="form-label" for="estado">
+            <span class="label-icon">🔄</span> Estado
+          </label>
+          <select
+            id="estado"
+            class="form-control form-select"
+            formControlName="estado"
+          >
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+          <div class="error-messages" *ngIf="f['estado'].invalid && f['estado'].touched">
+            <span *ngIf="f['estado'].errors?.['required']">El estado es requerido</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="form-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelar()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary" id="btn-guardar">
+          {{ isEditMode ? '💾 Guardar Cambios' : '✅ Crear Estudiante' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,177 @@
+<!-- Main Content -->
+<div class="lista-container">
+  <!-- Header -->
+  <div class="lista-header">
+    <div class="header-left">
+      <h1>
+        <span class="header-icon">🎓</span>
+        Gestión de Estudiantes
+      </h1>
+      <p class="header-subtitle">Administra los registros del sistema académico</p>
+    </div>
+    <button class="btn btn-primary btn-add" (click)="abrirFormularioCrear()" id="btn-agregar">
+      <span class="btn-icon">+</span>
+      Nuevo Estudiante
+    </button>
+  </div>
+
+  <!-- Search & Filters Bar -->
+  <div class="toolbar">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por nombre, carné o email..."
+        [value]="searchTerm"
+        (input)="onSearchChange($event)"
+        id="search-input"
+      />
+      <span class="search-hint" *ngIf="searchTerm">
+        {{ totalRegistros }} resultado{{ totalRegistros !== 1 ? 's' : '' }}
+      </span>
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Mostrar:</label>
+      <select
+        class="filter-select"
+        [ngModel]="limit"
+        (ngModelChange)="onLimitChange($event)"
+        id="limit-select"
+      >
+        <option [value]="5">5 por página</option>
+        <option [value]="10">10 por página</option>
+        <option [value]="20">20 por página</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper">
+    <!-- Loading overlay -->
+    <div class="loading-overlay" *ngIf="loading">
+      <div class="spinner"></div>
+      <span>Cargando estudiantes...</span>
+    </div>
+
+    <table class="data-table" id="students-table">
+      <thead>
+        <tr>
+          <th class="sortable" (click)="onSort('nombre')">
+            Nombre <span class="sort-icon">{{ getSortIcon('nombre') }}</span>
+          </th>
+          <th class="sortable" (click)="onSort('carnet')">
+            Carné <span class="sort-icon">{{ getSortIcon('carnet') }}</span>
+          </th>
+          <th class="sortable" (click)="onSort('email')">
+            Email <span class="sort-icon">{{ getSortIcon('email') }}</span>
+          </th>
+          <th class="sortable" (click)="onSort('carrera')">
+            Carrera <span class="sort-icon">{{ getSortIcon('carrera') }}</span>
+          </th>
+          <th class="sortable th-center" (click)="onSort('semestre')">
+            Semestre <span class="sort-icon">{{ getSortIcon('semestre') }}</span>
+          </th>
+          <th class="sortable th-center" (click)="onSort('estado')">
+            Estado <span class="sort-icon">{{ getSortIcon('estado') }}</span>
+          </th>
+          <th class="th-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="!loading && estudiantes.length === 0">
+          <td colspan="7" class="empty-state">
+            <div class="empty-content">
+              <span class="empty-icon">📋</span>
+              <p class="empty-text">No se encontraron estudiantes</p>
+              <p class="empty-subtext" *ngIf="searchTerm">Intenta con otro término de búsqueda</p>
+            </div>
+          </td>
+        </tr>
+        <tr
+          *ngFor="let est of estudiantes; let i = index"
+          class="table-row"
+          [style.animation-delay]="i * 0.05 + 's'"
+        >
+          <td class="td-name">
+            <div class="name-cell">
+              <span class="avatar">{{ est.nombre.charAt(0) }}</span>
+              {{ est.nombre }}
+            </div>
+          </td>
+          <td><code class="carnet-badge">{{ est.carnet }}</code></td>
+          <td class="td-email">{{ est.email }}</td>
+          <td>{{ est.carrera }}</td>
+          <td class="td-center">
+            <span class="semester-badge">{{ est.semestre }}</span>
+          </td>
+          <td class="td-center">
+            <span class="status-badge" [ngClass]="getEstadoClass(est.estado)">
+              {{ est.estado }}
+            </span>
+          </td>
+          <td class="td-center td-actions">
+            <button
+              class="btn-action btn-edit"
+              (click)="abrirFormularioEditar(est)"
+              title="Editar estudiante"
+            >
+              ✏️ Editar
+            </button>
+            <button
+              class="btn-action btn-delete"
+              (click)="confirmarEliminar(est)"
+              title="Eliminar estudiante"
+            >
+              🗑️ Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-bar" *ngIf="totalRegistros > 0">
+    <div class="pagination-info">
+      Mostrando <strong>{{ startRecord }}</strong> - <strong>{{ endRecord }}</strong>
+      de <strong>{{ totalRegistros }}</strong> registros
+    </div>
+    <div class="pagination-controls">
+      <button
+        class="btn-page"
+        (click)="previousPage()"
+        [disabled]="currentPage === 1"
+        id="btn-anterior"
+      >
+        ← Anterior
+      </button>
+      <div class="page-numbers">
+        <button
+          *ngFor="let page of getPageNumbers()"
+          class="btn-page-number"
+          [ngClass]="{ 'active': page === currentPage }"
+          (click)="goToPage(page)"
+        >
+          {{ page }}
+        </button>
+      </div>
+      <button
+        class="btn-page"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages || totalPages === 0"
+        id="btn-siguiente"
+      >
+        Siguiente →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Form Modal -->
+<app-estudiante-form
+  *ngIf="showForm"
+  [estudiante]="estudianteEditar"
+  (onSubmit)="onFormSubmit($event)"
+  (onCancel)="cerrarFormulario()"
+></app-estudiante-form>

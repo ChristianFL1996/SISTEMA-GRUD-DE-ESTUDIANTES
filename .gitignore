@@ -1,0 +1,8 @@
+node_modules/
+.angular/
+dist/
+.env
+.vscode/
+Parcial Sistema GRUD.mp4
+SISTEMA_GRUD_FRONTEND.code-workspace
+Video Demo Sistema GRUD Estudiantes.mp4
